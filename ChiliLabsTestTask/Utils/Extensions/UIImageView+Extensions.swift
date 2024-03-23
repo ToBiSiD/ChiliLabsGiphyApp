@@ -1,10 +1,3 @@
-//
-//  UIImageView+Extensions.swift
-//  ChiliLabsTestTask
-//
-//  Created by Tobias on 21.03.2024.
-//
-
 import UIKit
 
 extension UIImageView {

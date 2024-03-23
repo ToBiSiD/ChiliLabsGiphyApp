@@ -1,10 +1,3 @@
-//
-//  UIViewController+Extensions.swift
-//  ChiliLabsTestTask
-//
-//  Created by Tobias on 21.03.2024.
-//
-
 import SwiftUI
 
 extension UIViewController {
@@ -22,8 +15,8 @@ extension UIViewController {
 
 //MARK: - Preview Logic
 extension UIViewController {
-    static var preview: some View {
-        Preview(Self()).ignoresSafeArea()
+    var preview: some View {
+        Preview(self).ignoresSafeArea()
     }
     
     private struct Preview: UIViewControllerRepresentable {

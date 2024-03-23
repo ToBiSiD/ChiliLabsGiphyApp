@@ -25,6 +25,14 @@
 		D26E6F732BAC6D8A001C797C /* LogType.swift in Sources */ = {isa = PBXBuildFile; fileRef = D26E6F722BAC6D8A001C797C /* LogType.swift */; };
 		D26E6F772BAC6DC8001C797C /* LinkBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = D26E6F762BAC6DC8001C797C /* LinkBuilder.swift */; };
 		D26E6F792BAC8434001C797C /* GiphyViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = D26E6F782BAC8434001C797C /* GiphyViewCell.swift */; };
+		D26E6F7B2BAD76F9001C797C /* DetailsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D26E6F7A2BAD76F9001C797C /* DetailsViewController.swift */; };
+		D26E6F7D2BAD7AE8001C797C /* GiphyContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D26E6F7C2BAD7AE8001C797C /* GiphyContentView.swift */; };
+		D26E6F7F2BAD8C7D001C797C /* String+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = D26E6F7E2BAD8C7D001C797C /* String+Extensions.swift */; };
+		D26E6F822BADD747001C797C /* DataHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = D26E6F812BADD747001C797C /* DataHandler.swift */; };
+		D26E6F852BADD771001C797C /* DataHandlerError.swift in Sources */ = {isa = PBXBuildFile; fileRef = D26E6F842BADD771001C797C /* DataHandlerError.swift */; };
+		D26E6F872BADD7A6001C797C /* NetworkError.swift in Sources */ = {isa = PBXBuildFile; fileRef = D26E6F862BADD7A6001C797C /* NetworkError.swift */; };
+		D26E6F8A2BADD7D2001C797C /* NetworkHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = D26E6F892BADD7D2001C797C /* NetworkHandler.swift */; };
+		D26E6F8C2BADD7F9001C797C /* NetworkLoadService.swift in Sources */ = {isa = PBXBuildFile; fileRef = D26E6F8B2BADD7F9001C797C /* NetworkLoadService.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -48,6 +56,14 @@
 		D26E6F722BAC6D8A001C797C /* LogType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogType.swift; sourceTree = "<group>"; };
 		D26E6F762BAC6DC8001C797C /* LinkBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkBuilder.swift; sourceTree = "<group>"; };
 		D26E6F782BAC8434001C797C /* GiphyViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GiphyViewCell.swift; sourceTree = "<group>"; };
+		D26E6F7A2BAD76F9001C797C /* DetailsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailsViewController.swift; sourceTree = "<group>"; };
+		D26E6F7C2BAD7AE8001C797C /* GiphyContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GiphyContentView.swift; sourceTree = "<group>"; };
+		D26E6F7E2BAD8C7D001C797C /* String+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String+Extensions.swift"; sourceTree = "<group>"; };
+		D26E6F812BADD747001C797C /* DataHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataHandler.swift; sourceTree = "<group>"; };
+		D26E6F842BADD771001C797C /* DataHandlerError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataHandlerError.swift; sourceTree = "<group>"; };
+		D26E6F862BADD7A6001C797C /* NetworkError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkError.swift; sourceTree = "<group>"; };
+		D26E6F892BADD7D2001C797C /* NetworkHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkHandler.swift; sourceTree = "<group>"; };
+		D26E6F8B2BADD7F9001C797C /* NetworkLoadService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkLoadService.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -91,7 +107,7 @@
 				D26E6F502BAC2436001C797C /* Assets.xcassets */,
 				D26E6F522BAC2436001C797C /* LaunchScreen.storyboard */,
 				D26E6F552BAC2436001C797C /* Info.plist */,
-				D26E6F752BAC6DAD001C797C /* GiphyAPI */,
+				D26E6F802BADD73E001C797C /* Services */,
 			);
 			path = ChiliLabsTestTask;
 			sourceTree = "<group>";
@@ -102,6 +118,7 @@
 				D26E6F5E2BAC2566001C797C /* UIView+Extensions.swift */,
 				D26E6F602BAC258D001C797C /* UIViewController+Extensions.swift */,
 				D26E6F622BAC2BB1001C797C /* UIImageView+Extensions.swift */,
+				D26E6F7E2BAD8C7D001C797C /* String+Extensions.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -110,7 +127,9 @@
 			isa = PBXGroup;
 			children = (
 				D26E6F5B2BAC24C2001C797C /* MainViewController.swift */,
+				D26E6F7A2BAD76F9001C797C /* DetailsViewController.swift */,
 				D26E6F782BAC8434001C797C /* GiphyViewCell.swift */,
+				D26E6F7C2BAD7AE8001C797C /* GiphyContentView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -157,6 +176,35 @@
 				D26E6F762BAC6DC8001C797C /* LinkBuilder.swift */,
 			);
 			path = GiphyAPI;
+			sourceTree = "<group>";
+		};
+		D26E6F802BADD73E001C797C /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				D26E6F752BAC6DAD001C797C /* GiphyAPI */,
+				D26E6F832BADD763001C797C /* DataHandler */,
+				D26E6F882BADD7B0001C797C /* NetworkLogic */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
+		D26E6F832BADD763001C797C /* DataHandler */ = {
+			isa = PBXGroup;
+			children = (
+				D26E6F812BADD747001C797C /* DataHandler.swift */,
+				D26E6F842BADD771001C797C /* DataHandlerError.swift */,
+			);
+			path = DataHandler;
+			sourceTree = "<group>";
+		};
+		D26E6F882BADD7B0001C797C /* NetworkLogic */ = {
+			isa = PBXGroup;
+			children = (
+				D26E6F862BADD7A6001C797C /* NetworkError.swift */,
+				D26E6F892BADD7D2001C797C /* NetworkHandler.swift */,
+				D26E6F8B2BADD7F9001C797C /* NetworkLoadService.swift */,
+			);
+			path = NetworkLogic;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -231,16 +279,24 @@
 			buildActionMask = 2147483647;
 			files = (
 				D26E6F712BAC6D6E001C797C /* LogPlace.swift in Sources */,
+				D26E6F8A2BADD7D2001C797C /* NetworkHandler.swift in Sources */,
 				D26E6F4C2BAC2434001C797C /* ViewController.swift in Sources */,
+				D26E6F8C2BADD7F9001C797C /* NetworkLoadService.swift in Sources */,
 				D26E6F632BAC2BB1001C797C /* UIImageView+Extensions.swift in Sources */,
+				D26E6F852BADD771001C797C /* DataHandlerError.swift in Sources */,
 				D26E6F6C2BAC3644001C797C /* GiphyViewModel.swift in Sources */,
+				D26E6F7F2BAD8C7D001C797C /* String+Extensions.swift in Sources */,
 				D26E6F732BAC6D8A001C797C /* LogType.swift in Sources */,
 				D26E6F482BAC2434001C797C /* AppDelegate.swift in Sources */,
+				D26E6F822BADD747001C797C /* DataHandler.swift in Sources */,
 				D26E6F5F2BAC2566001C797C /* UIView+Extensions.swift in Sources */,
 				D26E6F4A2BAC2434001C797C /* SceneDelegate.swift in Sources */,
 				D26E6F772BAC6DC8001C797C /* LinkBuilder.swift in Sources */,
 				D26E6F692BAC318E001C797C /* GiphyLoaderService.swift in Sources */,
+				D26E6F7D2BAD7AE8001C797C /* GiphyContentView.swift in Sources */,
 				D26E6F612BAC258D001C797C /* UIViewController+Extensions.swift in Sources */,
+				D26E6F872BADD7A6001C797C /* NetworkError.swift in Sources */,
+				D26E6F7B2BAD76F9001C797C /* DetailsViewController.swift in Sources */,
 				D26E6F6F2BAC6D34001C797C /* DebugLogger.swift in Sources */,
 				D26E6F672BAC2DE0001C797C /* GiphyResponse.swift in Sources */,
 				D26E6F792BAC8434001C797C /* GiphyViewCell.swift in Sources */,

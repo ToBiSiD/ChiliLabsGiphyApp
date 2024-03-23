@@ -1,10 +1,3 @@
-//
-//  DebugLogger.swift
-//  ChiliLabsTestTask
-//
-//  Created by Tobias on 21.03.2024.
-//
-
 import Foundation
 
 struct DebugLogger {
@@ -16,7 +9,7 @@ struct DebugLogger {
         }
         
         let info: String = type.typeIdentifier + place.title
-        print("\(info)", items)
+        print(info, items)
     }
 }
 

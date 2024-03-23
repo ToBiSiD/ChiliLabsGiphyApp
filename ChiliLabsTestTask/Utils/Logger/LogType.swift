@@ -1,10 +1,3 @@
-//
-//  LogType.swift
-//  ChiliLabsTestTask
-//
-//  Created by Tobias on 21.03.2024.
-//
-
 import Foundation
 
 enum LogType: String {

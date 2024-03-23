@@ -1,8 +1,9 @@
 import Foundation
 
-enum APIConstants: String {
-    case baseLink = "https://api.giphy.com/v1/"
-    case key = "DooTZyR0AN7E5oqCLOtGZp8QwV3VmpGM"
+struct APIConstants {
+    static let limit: Int = 15
+    static let baseLink: String = "https://api.giphy.com/v1/"
+    static let key: String = "DooTZyR0AN7E5oqCLOtGZp8QwV3VmpGM"
 }
 
 enum Endpoints: String {
@@ -23,20 +24,13 @@ enum GiphyLinkParams: String {
     case rating = "rating"
 }
 
-enum GIFError: Error {
-    case invalidURL
-    case invalidResponse
-    case invalidData
-    case decodingError
-}
-
 struct LinkBuilder {
     static func buildURL(endpoint: Endpoints, contentType: ContentType, queryParams: [GiphyLinkParams: String] = [:]) -> URL? {
-        var components = URLComponents(string: APIConstants.baseLink.rawValue + contentType.rawValue + endpoint.rawValue)
+        var components = URLComponents(string: APIConstants.baseLink + contentType.rawValue + endpoint.rawValue)
         
         var queryItems = [URLQueryItem]()
-        queryItems.append(URLQueryItem(name: GiphyLinkParams.apiKey.rawValue, value: APIConstants.key.rawValue))
-        queryItems.append(URLQueryItem(name: GiphyLinkParams.limit.rawValue, value: "10"))
+        queryItems.append(URLQueryItem(name: GiphyLinkParams.apiKey.rawValue, value: APIConstants.key))
+        queryItems.append(URLQueryItem(name: GiphyLinkParams.limit.rawValue, value: "\(APIConstants.limit)"))
         
         for (param, value) in queryParams {
             queryItems.append(URLQueryItem(name: param.rawValue, value: value))

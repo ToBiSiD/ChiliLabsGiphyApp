@@ -4,7 +4,7 @@ import SwiftUI
 import Combine
 
 #Preview {
-    MainViewController.preview
+    MainViewController().preview
 }
 
 final class MainViewController: UIViewController {
@@ -23,12 +23,24 @@ final class MainViewController: UIViewController {
         return view
     }()
     
+    private let errorView: UILabel = {
+        let label = UILabel()
+        label.text = "Loading error"
+        label.font = .preferredFont(forTextStyle: .body)
+        label.textColor = .systemRed
+        label.isHidden = true
+        
+        return label
+    }()
+    
     private var searchTimer: Timer?
     private var viewModel: GiphyViewModel
     private var cancellables: Set<AnyCancellable> = []
-    private let searchDelay: TimeInterval = 0.5
+    
+    private let searchDelay: TimeInterval = 2
     private let horizontalOffset: CGFloat = 20.0
     private let collectionHorizontalOffset: CGFloat = 10
+    private let cellIdentifier: String = "giphyCell"
     
     init() {
         self.viewModel = .init()
@@ -70,7 +82,8 @@ private extension MainViewController {
     }
     
     func setupCollectionView() {
-        collectionView.register(GiphyViewCell.self, forCellWithReuseIdentifier: "giphyCell")
+        collectionView.register(GiphyViewCell.self, forCellWithReuseIdentifier: cellIdentifier)
+        collectionView.showsVerticalScrollIndicator = false
         collectionView.delegate = self
         collectionView.dataSource = self
     }
@@ -82,16 +95,37 @@ private extension MainViewController {
 
 private extension MainViewController {
     func setupViewModel() {
-        viewModel.$gifs
+        viewModel.$dataState
             .receive(on: DispatchQueue.main)
-            .sink { _ in
-                self.updateGifs()
+            .sink { [weak self] state in
+                self?.handleDataStateChange(state)
             }
             .store(in: &cancellables)
     }
     
-    func updateGifs() {
-        collectionView.reloadData()
+    func handleDataStateChange(_ state: DataState) {
+        switch state {
+        case .idle:
+            errorView.isHidden = true
+            //TODO: add loading view
+            break
+        case .loaded:
+            errorView.isHidden = true
+            addLoadedGiphy()
+        case .error(let message):
+            errorView.isHidden = false
+            errorView.text = message
+            break
+        }
+    }
+    
+    func addLoadedGiphy() {
+        let newIndexPaths = (viewModel.offset...viewModel.gifs.count - 1)
+            .map { IndexPath(item: $0, section: 0) }
+        
+        collectionView.performBatchUpdates {
+            collectionView.insertItems(at: newIndexPaths)
+        }
     }
 }
 
@@ -101,7 +135,8 @@ extension MainViewController: UISearchBarDelegate {
         
         searchTimer = Timer.scheduledTimer(withTimeInterval: searchDelay, repeats: false) { [weak self] _ in
             guard let query = searchBar.text else { return }
-            self?.updateGifs()
+            
+            self?.search(for: query)
         }
     }
     
@@ -110,16 +145,53 @@ extension MainViewController: UISearchBarDelegate {
         
         guard let query = searchBar.text else { return }
         
-        updateGifs()
+        search(for: query)
         searchBar.resignFirstResponder()
+    }
+    
+    func search(for query: String) {
+        viewModel.clearData()
+        collectionView.reloadData()
+        viewModel.search(for: query)
     }
 }
 
-extension MainViewController: UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
+extension MainViewController: UICollectionViewDelegate, UICollectionViewDataSource {
+    func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
+        if indexPath.row == collectionView.numberOfItems(inSection: indexPath.section) - 1 {
+            viewModel.tryFecthNext()
+        }
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        viewModel.gifs.count
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: cellIdentifier, for: indexPath) as! GiphyViewCell
+        
+        let gifURL = URL(string: viewModel.gifs[indexPath.item].images.fixedWidth.getLink())
+        cell.configure(gifURL)
+        return cell
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        let data = viewModel.gifs[indexPath.item]
+        let details = DetailsViewController(giphyData: data)
+        
+        navigationController?.pushViewController(details, animated: true)
+    }
+}
+
+extension MainViewController: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         let width = collectionView.bounds.width / 2 - 2 * collectionHorizontalOffset
         let size = CGSize(width: width, height: 150.0)
         return size
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
+        2 * collectionHorizontalOffset
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
@@ -130,18 +202,4 @@ extension MainViewController: UICollectionViewDelegate, UICollectionViewDataSour
             right: collectionHorizontalOffset
         )
     }
-    
-    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        viewModel.gifs.count
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "giphyCell", for: indexPath) as! GiphyViewCell
-        
-        let gifURL = URL(string: viewModel.gifs[indexPath.item].images.original.getLink() ?? "")
-        cell.configure(gifURL)
-        return cell
-    }
-    
-    
 }

@@ -1,57 +1,98 @@
-//
-//  GiphyViewModel.swift
-//  ChiliLabsTestTask
-//
-//  Created by Tobias on 21.03.2024.
-//
-
 import Foundation
 import Combine
 
+enum DataState {
+    case idle
+    case loaded
+    case error(message: String)
+}
+
 final class GiphyViewModel {
     private let apiService: GiphyLoaderService = .init()
-    @Published private(set) var gifs: [GIFObject] = []
-    @Published private(set) var errorText: String?
+    
+    private(set) var gifs: [GiphyObject] = []
+    private(set) var offset = 0
     
     private var cancellables: Set<AnyCancellable> = []
+    private var totalCount = 0
+    
+    @Published private(set) var dataState: DataState = .idle
     
     init() {
-        fetchGifs()
+        fetch()
+    }
+    
+    func clearData() {
+        gifs.removeAll()
     }
     
     func search(for query: String) {
-        apiService.searchGifs()
-            .sink { completion in
-                switch completion {
-                case .finished:
-                    self.errorText = nil
-                    break
-                case .failure(let error):
-                    self.errorText = error.localizedDescription
-                }
-            } receiveValue: { result in
-                self.gifs = result.data
-            }
-            .store(in: &cancellables)
+        offset = 0
+        sendSearchRequest(query)
+    }
+    
+    func fetch() {
+        offset = 0
+        sendFetchRequest()
+    }
+    
+    func tryFecthNext() {
+        guard offset + APIConstants.limit < totalCount else {
+            return
+        }
+        
+        offset += APIConstants.limit
+        sendFetchRequest()
     }
 }
 
 private extension GiphyViewModel {
-    func fetchGifs() {
-        apiService.fetchGifs()
+    func sendFetchRequest() {
+        apiService.fetchGifs(with: offset)
             .sink { completion in
-                switch completion {
-                case .finished:
-                    self.errorText = nil
-                    break
-                case .failure(let error):
-                    self.errorText = error.localizedDescription
-                    DebugLogger.printLog(error, place: .viewModel("\(self)"), type: .error)
-                }
+                self.handleCompletion(completion)
             } receiveValue: { result in
-                self.gifs = result.data
-                DebugLogger.printLog(self.gifs.count, place: .viewModel("\(self)"), type: .success)
+                self.handleSuccess(result)
             }
             .store(in: &cancellables)
+    }
+    
+    func sendSearchRequest(_ query: String) {
+        apiService.searchGifs(for: query, with: offset)
+            .sink { completion in
+                self.handleCompletion(completion)
+            } receiveValue: { result in
+                self.handleSuccess(result)
+            }
+            .store(in: &cancellables)
+    }
+    
+    func handleCompletion(_ completion: Subscribers.Completion<Error>) {
+        switch completion {
+        case .finished:
+            break
+        case .failure(let error):
+            dataState = .error(message: error.localizedDescription)
+            DebugLogger.printLog(error, place: .viewModel("\(self)"), type: .error)
+        }
+    }
+    
+    func handleSuccess(_ result: GiphyResponse) {
+        guard !result.data.isEmpty else {
+            dataState = .error(message: "Cannot find any giphy")
+            return
+        }
+        
+        totalCount = result.pagination.totalCount
+        
+        if offset == 0 {
+            gifs = result.data
+        } else {
+            gifs += result.data
+        }
+        
+        DebugLogger.printLog(gifs.count, place: .viewModel("\(self)"), type: .success)
+        dataState = .loaded
+        dataState = .error(message: "Errrorororor")
     }
 }

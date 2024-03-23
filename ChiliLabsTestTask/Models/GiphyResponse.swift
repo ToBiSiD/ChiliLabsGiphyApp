@@ -1,69 +1,84 @@
-//
-//  GiphyResponse.swift
-//  ChiliLabsTestTask
-//
-//  Created by Tobias on 21.03.2024.
-//
-
 import Foundation
 
 struct GiphyResponse: Decodable {
-    let data: [GIFObject]
+    let data: [GiphyObject]
+    let pagination: Pagination
 }
 
-struct GIFObject: Decodable {
+struct Pagination: Decodable {
+    let totalCount: Int
+    let count: Int
+    let offset: Int
+    
+    enum CodingKeys: String, CodingKey {
+        case totalCount = "total_count"
+        case count
+        case offset
+    }
+}
+
+struct GiphyObject: Decodable {
+    let id: String
     let type: String
     let title: String
-    let id: String
-    let slug: String
-    let url: String
-    let bitlyUrl: String
-    let embedUrl: String
     let rating: String
     let importDate: String
     let trendingDate: String
     let images: Images
     
     enum CodingKeys: String, CodingKey {
+        case id
         case type
         case title
-        case id
-        case slug
-        case url
-        case bitlyUrl = "bitly_url"
-        case embedUrl = "embed_url"
         case rating
         case importDate = "import_datetime"
         case trendingDate = "trending_datetime"
-        case images = "images"
+        case images
     }
 }
 
+extension GiphyObject {
+    static let mockGiphy: GiphyObject =
+        .init(
+            id: "11111",
+            type: "gif",
+            title: "Title test long title test long title test long title test long title test long title test long title test long title test long title test long title test long title test long title test long title test long title test long title test long ",
+            rating: "g",
+            importDate: "2022-04-20 18:46:14",
+            trendingDate: "2022-04-20 18:46:14",
+            images: .init(
+                fixedWidth: .init(
+                    mp4: "testhttps://media0.giphy.com/media/vOMInkwuCzy19On48i/200w.mp4?cid=6a9e8bf2gqgn3y3mme2ae7z01y3hzy40gpi6wn3mujv8j4ke&ep=v1_gifs_trending&rid=200w.mp4&ct=g",
+                    height: "200",
+                    width: "200"
+                )
+            )
+        )
+}
+
 struct Images: Codable {
-    let original: FixedSize
+    let fixedWidth: FixedSize
     
     enum CodingKeys: String, CodingKey {
-        case original
+        case fixedWidth = "fixed_width"
     }
 }
 
 struct FixedSize: Codable {
     let mp4: String?
-    let webp: String?
-
-    enum CodingKeys: String, CodingKey {
-        case mp4
-        case webp
-    }
+    let height: String
+    let width: String
     
-    func getLink() -> String? {
+    func getLink() -> String {
         if let mp4 = mp4 {
             return mp4
-        } else if let webp = webp {
-            return webp
         } else {
-            return nil
+            return ""
         }
+    }
+    
+    func getSize() -> (width: Int, height: Int) {
+        (width: self.width.toInt(), height: self.height.toInt())
     }
 }
 
