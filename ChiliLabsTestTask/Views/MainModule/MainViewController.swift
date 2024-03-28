@@ -4,14 +4,34 @@ import SwiftUI
 import Combine
 
 #Preview {
-    MainViewController().preview
+    let coordinator = MainCoordinator(UINavigationController())
+    
+    return MainViewController(coordinator: coordinator).preview
 }
 
 final class MainViewController: UIViewController {
+    private let containerView: UIStackView = {
+        let view = UIStackView()
+        view.axis = .vertical
+        view.spacing = 20
+        
+        return view
+    }()
+    
+    private let contentControl: UISegmentedControl = {
+        let segmented: UISegmentedControl = .init(items: [
+            ContentType.gif.rawValue,
+            ContentType.stiker.rawValue
+        ])
+        segmented.selectedSegmentIndex = 0
+        segmented.selectedSegmentTintColor = .systemMint
+        
+        return segmented
+    }()
+    
     private let collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
         let view = UICollectionView(frame: CGRect.zero, collectionViewLayout: layout)
-        
         
         return view
     }()
@@ -27,7 +47,7 @@ final class MainViewController: UIViewController {
         let label = UILabel()
         label.text = "Loading error"
         label.font = .preferredFont(forTextStyle: .body)
-        label.textColor = .systemRed
+        label.textColor = AppColor.error
         label.isHidden = true
         
         return label
@@ -37,13 +57,15 @@ final class MainViewController: UIViewController {
     private var viewModel: GiphyViewModel
     private var cancellables: Set<AnyCancellable> = []
     
-    private let searchDelay: TimeInterval = 2
-    private let horizontalOffset: CGFloat = 20.0
-    private let collectionHorizontalOffset: CGFloat = 10
-    private let cellIdentifier: String = "giphyCell"
+    private var cellShadow: UIBezierPath?
+    private var cellSize: CGFloat?
     
-    init() {
-        self.viewModel = .init()
+    private var coordinator: MainCoordinator
+    
+    init(coordinator: MainCoordinator) {
+        self.coordinator = coordinator
+        self.viewModel = coordinator.getViewModel()
+        
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -58,31 +80,42 @@ final class MainViewController: UIViewController {
     }
 }
 
+//MARK: - UI Setup
 private extension MainViewController {
     func setupUI() {
-        view.addSubviews(collectionView, searchBar)
+        view.addSubviews(containerView, searchBar, contentControl)
+        containerView.addArrangedSubviews(errorView, collectionView)
         
+        setupContentControl()
         setupConstrains()
         setupSearchBar()
         setupCollectionView()
+        setupTapGesture()
     }
     
     func setupConstrains() {
         NSLayoutConstraint.activate([
             searchBar.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
             searchBar.heightAnchor.constraint(equalToConstant: 50),
-            searchBar.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -horizontalOffset),
-            searchBar.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: horizontalOffset),
+            searchBar.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -UIConstants.horizontalPadding),
+            searchBar.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: UIConstants.horizontalPadding),
             
-            collectionView.topAnchor.constraint(equalTo: searchBar.bottomAnchor),
-            collectionView.leadingAnchor.constraint(equalTo: searchBar.leadingAnchor),
-            collectionView.trailingAnchor.constraint(equalTo: searchBar.trailingAnchor),
-            collectionView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor)
+            contentControl.topAnchor.constraint(equalTo: searchBar.bottomAnchor),
+            contentControl.leadingAnchor.constraint(equalTo: searchBar.leadingAnchor),
+            contentControl.trailingAnchor.constraint(equalTo: searchBar.trailingAnchor),
+            contentControl.heightAnchor.constraint(equalToConstant: 30),
+            
+            containerView.topAnchor.constraint(equalTo: contentControl.bottomAnchor),
+            containerView.leadingAnchor.constraint(equalTo: searchBar.leadingAnchor),
+            containerView.trailingAnchor.constraint(equalTo: searchBar.trailingAnchor),
+            containerView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
+            
+            errorView.heightAnchor.constraint(equalToConstant: 40)
         ])
     }
     
     func setupCollectionView() {
-        collectionView.register(GiphyViewCell.self, forCellWithReuseIdentifier: cellIdentifier)
+        collectionView.register(GiphyViewCell.self, forCellWithReuseIdentifier: UIConstants.giphyCellId)
         collectionView.showsVerticalScrollIndicator = false
         collectionView.delegate = self
         collectionView.dataSource = self
@@ -91,8 +124,23 @@ private extension MainViewController {
     func setupSearchBar() {
         searchBar.delegate = self
     }
+    
+    func setupContentControl() {
+        mapSegmentedControl(contentControl, action: onContentTypeChanged)
+    }
+    
+    func setupTapGesture() {
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
+        tapGesture.cancelsTouchesInView = false
+        view.addGestureRecognizer(tapGesture)
+    }
+    
+    @objc func dismissKeyboard() {
+        searchBar.resignFirstResponder()
+    }
 }
 
+//MARK: - Subscriptions and UIState changes
 private extension MainViewController {
     func setupViewModel() {
         viewModel.$dataState
@@ -106,17 +154,35 @@ private extension MainViewController {
     func handleDataStateChange(_ state: DataState) {
         switch state {
         case .idle:
-            errorView.isHidden = true
-            //TODO: add loading view
-            break
+            hideErrorView()
         case .loaded:
-            errorView.isHidden = true
+            hideErrorView()
             addLoadedGiphy()
         case .error(let message):
-            errorView.isHidden = false
-            errorView.text = message
+            showErrorView(with: message)
+        }
+    }
+    
+    func onContentTypeChanged() {
+        viewModel.clearData()
+        collectionView.reloadData()
+        switch contentControl.selectedSegmentIndex {
+        case 0:
+            viewModel.tryChangeContentType(.gif)
+        case 1:
+            viewModel.tryChangeContentType(.stiker)
+        default:
             break
         }
+    }
+    
+    func showErrorView(with message: String) {
+        errorView.isHidden = false
+        errorView.text = message
+    }
+    
+    func hideErrorView() {
+        errorView.isHidden = true
     }
     
     func addLoadedGiphy() {
@@ -129,11 +195,12 @@ private extension MainViewController {
     }
 }
 
+//MARK: - Implement Search delegate
 extension MainViewController: UISearchBarDelegate {
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
         searchTimer?.invalidate()
         
-        searchTimer = Timer.scheduledTimer(withTimeInterval: searchDelay, repeats: false) { [weak self] _ in
+        searchTimer = Timer.scheduledTimer(withTimeInterval: UIConstants.searchDelay, repeats: false) { [weak self] _ in
             guard let query = searchBar.text else { return }
             
             self?.search(for: query)
@@ -156,6 +223,7 @@ extension MainViewController: UISearchBarDelegate {
     }
 }
 
+//MARK: - Implement Collections' delegates
 extension MainViewController: UICollectionViewDelegate, UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
         if indexPath.row == collectionView.numberOfItems(inSection: indexPath.section) - 1 {
@@ -168,38 +236,51 @@ extension MainViewController: UICollectionViewDelegate, UICollectionViewDataSour
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: cellIdentifier, for: indexPath) as! GiphyViewCell
+        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: UIConstants.giphyCellId, for: indexPath) as? GiphyViewCell else {
+            fatalError("Failed to dequeue GiphyViewCell")
+        }
+        
+        if cellShadow == nil {
+            DebugLogger.printLog("Create cell Shadow", type: .action)
+            cellShadow = UIBezierPath(rect: cell.bounds)
+        }
+        
+        cell.setShadow(radius: 10, color: AppColor.shadow, opacity: 1, using: cellShadow?.cgPath)
         
         let gifURL = URL(string: viewModel.gifs[indexPath.item].images.fixedWidth.getLink())
         cell.configure(gifURL)
+        
         return cell
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let data = viewModel.gifs[indexPath.item]
-        let details = DetailsViewController(giphyData: data)
         
-        navigationController?.pushViewController(details, animated: true)
+        coordinator.openDetails(for: data)
     }
 }
 
+//MARK: - Implement CollectionFlowLayout
 extension MainViewController: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        let width = collectionView.bounds.width / 2 - 2 * collectionHorizontalOffset
-        let size = CGSize(width: width, height: 150.0)
-        return size
+        guard let cellSize = cellSize else {
+            let size = UIConstants.calculateCellSize(for: UIConstants.cellInRow, with: UIConstants.collectionSpacing * 4)
+            self.cellSize = size
+            return CGSize(width: size, height: size)
+        }
+        return CGSize(width: cellSize, height: cellSize)
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
-        2 * collectionHorizontalOffset
+        2 * UIConstants.collectionSpacing
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
         UIEdgeInsets(
             top: 20,
-            left: collectionHorizontalOffset,
+            left: UIConstants.collectionSpacing,
             bottom: 0,
-            right: collectionHorizontalOffset
+            right: UIConstants.collectionSpacing
         )
     }
 }

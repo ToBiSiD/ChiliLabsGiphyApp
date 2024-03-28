@@ -11,6 +11,14 @@ extension UIViewController {
         })
         button.addAction(uiAction, for: event)
     }
+    
+    func mapSegmentedControl(_ control: UISegmentedControl, action: @escaping () -> Void) {
+        let uiAction = UIAction(handler: { _ in
+            action()
+        })
+        
+        control.addAction(uiAction, for: .valueChanged)
+    }
 }
 
 //MARK: - Preview Logic

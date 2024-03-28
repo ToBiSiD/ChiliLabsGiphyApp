@@ -11,14 +11,27 @@ extension UIView {
             addSubview(child, applyConstraints: applyConstraints)
         }
     }
+    
+    func mapButton(_ button: UIButton, for event: UIControl.Event = .touchUpInside, action: @escaping () -> Void) {
+        let uiAction = UIAction(handler: { _ in
+            action()
+        })
+        button.addAction(uiAction, for: event)
+    }
 }
 
 extension UIView {
-    func setShadow(radius: CGFloat, color: UIColor, opacity: Float, offset: CGSize = CGSize(width: 0, height: 0)) {
+    private func setShadow(radius: CGFloat, color: UIColor, opacity: Float, offset: CGSize = CGSize(width: 0, height: 0)) {
         layer.shadowColor = color.cgColor
         layer.shadowOpacity = opacity
         layer.shadowRadius = radius
         layer.shadowOffset = offset
+    }
+    
+    func setShadow(radius: CGFloat, color: UIColor, opacity: Float, offset: CGSize = CGSize(width: 0, height: 0), using path: CGPath? = nil) {
+        setShadow(radius: radius, color: color, opacity: opacity, offset: offset)
+        
+        layer.shadowPath = path
     }
     
     func setCornerRadius(_ radius: CGFloat) {

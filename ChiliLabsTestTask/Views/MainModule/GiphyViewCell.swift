@@ -30,8 +30,18 @@ final class GiphyViewCell: UICollectionViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        
+        giphyView.prepareForReuse()
+    }
+    
     func configure(_ gifLink: URL? = nil) {
         giphyView.configure(gifLink)
+    }
+    
+    func setupShadow(_ path: UIBezierPath?) {
+        self.setShadow(radius: 10, color: AppColor.shadow, opacity: 1, using: path?.cgPath)
     }
 }
 

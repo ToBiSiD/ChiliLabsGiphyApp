@@ -15,6 +15,7 @@ final class GiphyViewModel {
     
     private var cancellables: Set<AnyCancellable> = []
     private var totalCount = 0
+    private var contentType: ContentType = .gif
     
     @Published private(set) var dataState: DataState = .idle
     
@@ -28,12 +29,12 @@ final class GiphyViewModel {
     
     func search(for query: String) {
         offset = 0
-        sendSearchRequest(query)
+        sendRequest(query: query)
     }
     
     func fetch() {
         offset = 0
-        sendFetchRequest()
+        sendRequest()
     }
     
     func tryFecthNext() {
@@ -42,39 +43,40 @@ final class GiphyViewModel {
         }
         
         offset += APIConstants.limit
-        sendFetchRequest()
+        sendRequest()
+    }
+    
+    func tryChangeContentType(_ newValue: ContentType) {
+        if newValue != contentType {
+            contentType = newValue
+            fetch()
+        }
     }
 }
 
 private extension GiphyViewModel {
-    func sendFetchRequest() {
-        apiService.fetchGifs(with: offset)
-            .sink { completion in
-                self.handleCompletion(completion)
-            } receiveValue: { result in
-                self.handleSuccess(result)
-            }
-            .store(in: &cancellables)
-    }
-    
-    func sendSearchRequest(_ query: String) {
-        apiService.searchGifs(for: query, with: offset)
-            .sink { completion in
-                self.handleCompletion(completion)
-            } receiveValue: { result in
-                self.handleSuccess(result)
+    func sendRequest(query: String? = nil) {
+        let requestPublisher: AnyPublisher<GiphyResponse, Error>
+        if let query = query {
+            requestPublisher = apiService.searchGifs(for: query, with: offset, contentType: contentType)
+        } else {
+            requestPublisher = apiService.fetchGifs(with: offset, contentType: contentType)
+        }
+        
+        requestPublisher
+            .sink { [weak self] completion in
+                self?.handleCompletion(completion)
+            } receiveValue: { [weak self] result in
+                self?.handleSuccess(result)
             }
             .store(in: &cancellables)
     }
     
     func handleCompletion(_ completion: Subscribers.Completion<Error>) {
-        switch completion {
-        case .finished:
-            break
-        case .failure(let error):
-            dataState = .error(message: error.localizedDescription)
-            DebugLogger.printLog(error, place: .viewModel("\(self)"), type: .error)
-        }
+        guard case .failure(let error) = completion else { return }
+        
+        dataState = .error(message: error.localizedDescription)
+        DebugLogger.printLog(error, place: .viewModel("\(self)"), type: .error)
     }
     
     func handleSuccess(_ result: GiphyResponse) {
@@ -84,15 +86,8 @@ private extension GiphyViewModel {
         }
         
         totalCount = result.pagination.totalCount
-        
-        if offset == 0 {
-            gifs = result.data
-        } else {
-            gifs += result.data
-        }
-        
+        gifs = offset == 0 ? result.data : gifs + result.data
         DebugLogger.printLog(gifs.count, place: .viewModel("\(self)"), type: .success)
         dataState = .loaded
-        dataState = .error(message: "Errrorororor")
     }
 }

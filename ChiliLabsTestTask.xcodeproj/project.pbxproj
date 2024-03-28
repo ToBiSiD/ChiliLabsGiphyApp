@@ -33,6 +33,16 @@
 		D26E6F872BADD7A6001C797C /* NetworkError.swift in Sources */ = {isa = PBXBuildFile; fileRef = D26E6F862BADD7A6001C797C /* NetworkError.swift */; };
 		D26E6F8A2BADD7D2001C797C /* NetworkHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = D26E6F892BADD7D2001C797C /* NetworkHandler.swift */; };
 		D26E6F8C2BADD7F9001C797C /* NetworkLoadService.swift in Sources */ = {isa = PBXBuildFile; fileRef = D26E6F8B2BADD7F9001C797C /* NetworkLoadService.swift */; };
+		D26E6F932BAEF174001C797C /* Coordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = D26E6F922BAEF174001C797C /* Coordinator.swift */; };
+		D26E6F952BAEF195001C797C /* MainCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = D26E6F942BAEF195001C797C /* MainCoordinator.swift */; };
+		D26E6F972BAEF233001C797C /* DetailsCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = D26E6F962BAEF233001C797C /* DetailsCoordinator.swift */; };
+		D26E6F992BAEFA4D001C797C /* DetailsNavigationBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = D26E6F982BAEFA4D001C797C /* DetailsNavigationBar.swift */; };
+		D26E6F9B2BB17C39001C797C /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = D26E6F9A2BB17C39001C797C /* Constants.swift */; };
+		D26E6F9D2BB181C5001C797C /* UIStackView+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = D26E6F9C2BB181C5001C797C /* UIStackView+Extensions.swift */; };
+		D26E6F9F2BB18590001C797C /* DateLabelView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D26E6F9E2BB18590001C797C /* DateLabelView.swift */; };
+		D26E6FA12BB1873A001C797C /* UIFont+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = D26E6FA02BB1873A001C797C /* UIFont+Extensions.swift */; };
+		D26E6FA32BB2C4D0001C797C /* GiphyInfoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D26E6FA22BB2C4D0001C797C /* GiphyInfoView.swift */; };
+		D26E6FA52BB2CDE5001C797C /* UserInfoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D26E6FA42BB2CDE5001C797C /* UserInfoView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -64,6 +74,16 @@
 		D26E6F862BADD7A6001C797C /* NetworkError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkError.swift; sourceTree = "<group>"; };
 		D26E6F892BADD7D2001C797C /* NetworkHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkHandler.swift; sourceTree = "<group>"; };
 		D26E6F8B2BADD7F9001C797C /* NetworkLoadService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkLoadService.swift; sourceTree = "<group>"; };
+		D26E6F922BAEF174001C797C /* Coordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Coordinator.swift; sourceTree = "<group>"; };
+		D26E6F942BAEF195001C797C /* MainCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainCoordinator.swift; sourceTree = "<group>"; };
+		D26E6F962BAEF233001C797C /* DetailsCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailsCoordinator.swift; sourceTree = "<group>"; };
+		D26E6F982BAEFA4D001C797C /* DetailsNavigationBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailsNavigationBar.swift; sourceTree = "<group>"; };
+		D26E6F9A2BB17C39001C797C /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
+		D26E6F9C2BB181C5001C797C /* UIStackView+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIStackView+Extensions.swift"; sourceTree = "<group>"; };
+		D26E6F9E2BB18590001C797C /* DateLabelView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateLabelView.swift; sourceTree = "<group>"; };
+		D26E6FA02BB1873A001C797C /* UIFont+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIFont+Extensions.swift"; sourceTree = "<group>"; };
+		D26E6FA22BB2C4D0001C797C /* GiphyInfoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GiphyInfoView.swift; sourceTree = "<group>"; };
+		D26E6FA42BB2CDE5001C797C /* UserInfoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserInfoView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -119,6 +139,8 @@
 				D26E6F602BAC258D001C797C /* UIViewController+Extensions.swift */,
 				D26E6F622BAC2BB1001C797C /* UIImageView+Extensions.swift */,
 				D26E6F7E2BAD8C7D001C797C /* String+Extensions.swift */,
+				D26E6F9C2BB181C5001C797C /* UIStackView+Extensions.swift */,
+				D26E6FA02BB1873A001C797C /* UIFont+Extensions.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -126,10 +148,9 @@
 		D26E6F642BAC2DBF001C797C /* Views */ = {
 			isa = PBXGroup;
 			children = (
-				D26E6F5B2BAC24C2001C797C /* MainViewController.swift */,
-				D26E6F7A2BAD76F9001C797C /* DetailsViewController.swift */,
-				D26E6F782BAC8434001C797C /* GiphyViewCell.swift */,
-				D26E6F7C2BAD7AE8001C797C /* GiphyContentView.swift */,
+				D26E6FA62BB359E0001C797C /* MainModule */,
+				D26E6FA72BB359F1001C797C /* DetailsModule */,
+				D26E6FA82BB359FD001C797C /* Reusable */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -153,8 +174,10 @@
 		D26E6F6D2BAC6D2A001C797C /* Utils */ = {
 			isa = PBXGroup;
 			children = (
+				D26E6F912BAEF167001C797C /* Coordinator */,
 				D26E6F5D2BAC2555001C797C /* Extensions */,
 				D26E6F742BAC6D9A001C797C /* Logger */,
+				D26E6F9A2BB17C39001C797C /* Constants.swift */,
 			);
 			path = Utils;
 			sourceTree = "<group>";
@@ -205,6 +228,45 @@
 				D26E6F8B2BADD7F9001C797C /* NetworkLoadService.swift */,
 			);
 			path = NetworkLogic;
+			sourceTree = "<group>";
+		};
+		D26E6F912BAEF167001C797C /* Coordinator */ = {
+			isa = PBXGroup;
+			children = (
+				D26E6F922BAEF174001C797C /* Coordinator.swift */,
+				D26E6F942BAEF195001C797C /* MainCoordinator.swift */,
+				D26E6F962BAEF233001C797C /* DetailsCoordinator.swift */,
+			);
+			path = Coordinator;
+			sourceTree = "<group>";
+		};
+		D26E6FA62BB359E0001C797C /* MainModule */ = {
+			isa = PBXGroup;
+			children = (
+				D26E6F5B2BAC24C2001C797C /* MainViewController.swift */,
+				D26E6F782BAC8434001C797C /* GiphyViewCell.swift */,
+			);
+			path = MainModule;
+			sourceTree = "<group>";
+		};
+		D26E6FA72BB359F1001C797C /* DetailsModule */ = {
+			isa = PBXGroup;
+			children = (
+				D26E6F7A2BAD76F9001C797C /* DetailsViewController.swift */,
+				D26E6F982BAEFA4D001C797C /* DetailsNavigationBar.swift */,
+				D26E6F9E2BB18590001C797C /* DateLabelView.swift */,
+				D26E6FA22BB2C4D0001C797C /* GiphyInfoView.swift */,
+				D26E6FA42BB2CDE5001C797C /* UserInfoView.swift */,
+			);
+			path = DetailsModule;
+			sourceTree = "<group>";
+		};
+		D26E6FA82BB359FD001C797C /* Reusable */ = {
+			isa = PBXGroup;
+			children = (
+				D26E6F7C2BAD7AE8001C797C /* GiphyContentView.swift */,
+			);
+			path = Reusable;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -281,26 +343,36 @@
 				D26E6F712BAC6D6E001C797C /* LogPlace.swift in Sources */,
 				D26E6F8A2BADD7D2001C797C /* NetworkHandler.swift in Sources */,
 				D26E6F4C2BAC2434001C797C /* ViewController.swift in Sources */,
+				D26E6F992BAEFA4D001C797C /* DetailsNavigationBar.swift in Sources */,
+				D26E6F972BAEF233001C797C /* DetailsCoordinator.swift in Sources */,
 				D26E6F8C2BADD7F9001C797C /* NetworkLoadService.swift in Sources */,
 				D26E6F632BAC2BB1001C797C /* UIImageView+Extensions.swift in Sources */,
+				D26E6F9F2BB18590001C797C /* DateLabelView.swift in Sources */,
 				D26E6F852BADD771001C797C /* DataHandlerError.swift in Sources */,
+				D26E6FA52BB2CDE5001C797C /* UserInfoView.swift in Sources */,
 				D26E6F6C2BAC3644001C797C /* GiphyViewModel.swift in Sources */,
 				D26E6F7F2BAD8C7D001C797C /* String+Extensions.swift in Sources */,
+				D26E6F932BAEF174001C797C /* Coordinator.swift in Sources */,
+				D26E6F9B2BB17C39001C797C /* Constants.swift in Sources */,
 				D26E6F732BAC6D8A001C797C /* LogType.swift in Sources */,
 				D26E6F482BAC2434001C797C /* AppDelegate.swift in Sources */,
 				D26E6F822BADD747001C797C /* DataHandler.swift in Sources */,
 				D26E6F5F2BAC2566001C797C /* UIView+Extensions.swift in Sources */,
+				D26E6F952BAEF195001C797C /* MainCoordinator.swift in Sources */,
 				D26E6F4A2BAC2434001C797C /* SceneDelegate.swift in Sources */,
 				D26E6F772BAC6DC8001C797C /* LinkBuilder.swift in Sources */,
 				D26E6F692BAC318E001C797C /* GiphyLoaderService.swift in Sources */,
 				D26E6F7D2BAD7AE8001C797C /* GiphyContentView.swift in Sources */,
 				D26E6F612BAC258D001C797C /* UIViewController+Extensions.swift in Sources */,
+				D26E6FA32BB2C4D0001C797C /* GiphyInfoView.swift in Sources */,
 				D26E6F872BADD7A6001C797C /* NetworkError.swift in Sources */,
 				D26E6F7B2BAD76F9001C797C /* DetailsViewController.swift in Sources */,
 				D26E6F6F2BAC6D34001C797C /* DebugLogger.swift in Sources */,
 				D26E6F672BAC2DE0001C797C /* GiphyResponse.swift in Sources */,
 				D26E6F792BAC8434001C797C /* GiphyViewCell.swift in Sources */,
 				D26E6F5C2BAC24C2001C797C /* MainViewController.swift in Sources */,
+				D26E6FA12BB1873A001C797C /* UIFont+Extensions.swift in Sources */,
+				D26E6F9D2BB181C5001C797C /* UIStackView+Extensions.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -452,6 +524,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = WWVXY36FK8;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = ChiliLabsTestTask/Info.plist;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -482,6 +555,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = WWVXY36FK8;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = ChiliLabsTestTask/Info.plist;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;

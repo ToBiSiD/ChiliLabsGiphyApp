@@ -6,16 +6,15 @@ import Combine
 final class GiphyContentView: UIView {
     private let placeholderView: UIView = {
         let view = UIView()
-        view.backgroundColor = .systemGray3
+        view.backgroundColor = AppColor.giphyBack
         view.setCornerRadius(20)
-        view.setShadow(radius: 10, color: .systemGray, opacity: 1)
         
         return view
     }()
     
     private let spinnerView: UIActivityIndicatorView = {
         let spinner = UIActivityIndicatorView(style: .large)
-        spinner.color = .yellow
+        spinner.color = AppColor.spinner
         
         return spinner
     }()
@@ -24,7 +23,7 @@ final class GiphyContentView: UIView {
         let text = UILabel()
         text.text = "Loading error"
         text.font = .preferredFont(forTextStyle: .body)
-        text.textColor = .systemRed
+        text.textColor = AppColor.error
         text.isHidden = true
         
         return text
@@ -33,7 +32,6 @@ final class GiphyContentView: UIView {
     private let videoContainerView: UIView = {
         let view = UIView()
         view.setCornerRadius(20)
-        view.setShadow(radius: 10, color: .systemGray, opacity: 1)
         
         return view
     }()
@@ -57,26 +55,33 @@ final class GiphyContentView: UIView {
         
         setupUI()
         configure()
+        subscribeOnApplicationState()
     }
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
-    func configure(_ gifLink: URL? = nil) {
-        if let url = gifLink {
-            tryPlayGif(url)
-        } else {
-            loadErrorText.isHidden = true
-            spinnerView.startAnimating()
-            videoContainerView.isHidden = true
-        }
+    deinit {
+        cleanUp()
     }
     
-    override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
-        if keyPath == "status" {
-            handleAVPlayerItemStatusChanges(change)
+    func configure(_ gifLink: URL? = nil) {
+        guard let url = gifLink else {
+            resetViews()
+            return
         }
+        tryPlayGif(url)
+    }
+    
+    func stopGiphy() {
+        gifLayer.player?.pause()
+    }
+    
+    func prepareForReuse() {
+        gifLayer.player?.pause()
+        gifLayer.player?.replaceCurrentItem(with: nil)
+        resetViews()
     }
 }
 
@@ -93,6 +98,12 @@ private extension GiphyContentView {
         gifLayer.frame = bounds
         videoContainerView.layer.addSublayer(gifLayer)
         videoContainerView.layer.masksToBounds = true
+    }
+    
+    func resetViews() {
+        loadErrorText.isHidden = true
+        spinnerView.startAnimating()
+        videoContainerView.isHidden = true
     }
     
     func setupConstrains() {
@@ -116,11 +127,26 @@ private extension GiphyContentView {
     }
     
     func tryPlayGif(_ url: URL) {
-        let player = AVPlayer(url: url)
-        gifLayer.player = player
+        if gifLayer.player == nil {
+            let player = AVPlayer(url: url)
+            gifLayer.player = player
+        } else {
+            gifLayer.player?.replaceCurrentItem(with: AVPlayerItem(url: url))
+        }
         
-        player.currentItem?.addObserver(self, forKeyPath: "status", options: [.new, .initial], context: nil)
-        NotificationCenter.default.publisher(for: .AVPlayerItemDidPlayToEndTime, object: player.currentItem)
+        subscribeOnPlayer(player: gifLayer.player)
+    }
+    
+    func subscribeOnPlayer(player: AVPlayer?) {
+        guard let player = player else { return }
+        
+        player.currentItem?.publisher(for: \.status)
+            .sink { [weak self] status in
+                self?.handlePlayerStatusChange(status)
+            }
+            .store(in: &cancellables)
+        
+        NotificationCenter.default.publisher(for: .AVPlayerItemDidPlayToEndTime, object:  player.currentItem)
             .sink { [weak self] _ in
                 self?.playerDidFinishPlaying()
             }
@@ -133,25 +159,54 @@ private extension GiphyContentView {
     }
 }
 
-
 private extension GiphyContentView {
-    func handleAVPlayerItemStatusChanges(_ change: [NSKeyValueChangeKey : Any]?) {
-        if let statusNumber = change?[.newKey] as? NSNumber,
-           let status = AVPlayerItem.Status(rawValue: statusNumber.intValue) {
-            switch status {
-            case .readyToPlay:
-                gifLayer.player?.play()
-                videoContainerView.isHidden = false
-                spinnerView.stopAnimating()
-            case .failed:
-                spinnerView.stopAnimating()
-                loadErrorText.isHidden = false
-            case .unknown:
-                loadErrorText.isHidden = true
-                break
-            @unknown default:
-                fatalError("Unhandled AVPlayerItem status")
+    func cleanUp() {
+        cancellables.forEach { $0.cancel() }
+        gifLayer.player?.pause()
+        gifLayer.player?.replaceCurrentItem(with: nil)
+    }
+    
+    func subscribeOnApplicationState() {
+        NotificationCenter.default.publisher(for: UIApplication.didBecomeActiveNotification)
+            .sink { [weak self] _ in
+                self?.applicationDidBecomeActive()
             }
+            .store(in: &cancellables)
+        
+        NotificationCenter.default.publisher(for: UIApplication.didEnterBackgroundNotification)
+            .sink { [weak self] _ in
+                self?.applicationDidEnterBackground()
+            }
+            .store(in: &cancellables)
+    }
+    
+    func handlePlayerStatusChange(_ status: AVPlayerItem.Status) {
+        switch status {
+        case .readyToPlay:
+            videoContainerView.isHidden = false
+            spinnerView.stopAnimating()
+            gifLayer.player?.play()
+        case .failed:
+            spinnerView.stopAnimating()
+            loadErrorText.isHidden = false
+        case .unknown:
+            loadErrorText.isHidden = true
+        @unknown default:
+            fatalError("Unhandled AVPlayerItem status")
+        }
+    }
+    
+    func applicationDidBecomeActive() {
+        if let player = gifLayer.player {
+            DebugLogger.printLog("Play player", type: .action)
+            player.play()
+        }
+    }
+    
+    func applicationDidEnterBackground() {
+        if let player = gifLayer.player {
+            DebugLogger.printLog("Pause player", type: .action)
+            player.pause()
         }
     }
 }
