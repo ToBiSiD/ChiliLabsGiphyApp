@@ -7,7 +7,7 @@ import SwiftUI
         Color.mint
             .ignoresSafeArea()
         
-        GiphyInfoView(giphy: .mockGiphy)
+        GiphyInfoView(giphy: .mockGiphy, cacheService: GiphyVideoCacheService())
             .preview
             .background(Color.blue)
             .frame(height: 200)
@@ -38,18 +38,21 @@ final class GiphyInfoView: UIView {
     
     private lazy var giphyView: GiphyContentView = {
         let view = GiphyContentView(
-            CGRect(x: 0, y: 0, width: gifSize.width, height: gifSize.height),
+            frame: CGRect(x: 0, y: 0, width: gifSize.width, height: gifSize.height),
+            cacheService: cacheService,
             gifAspect: .resize
         )
-        view.setShadow(radius: 10, color: AppColor.shadow, opacity: 1)
+        view.setShadow(radius: 10, color: AppColor.detailsText, opacity: 1)
         
         return view
     }()
     
+    private let cacheService: VideoCacheService
     private let giphyData: GiphyObject
     private let gifSize: (width: Int, height: Int)
     
-    init(giphy: GiphyObject) {
+    init(giphy: GiphyObject, cacheService: VideoCacheService) {
+        self.cacheService = cacheService
         self.giphyData = giphy
         self.gifSize = giphy.images.fixedWidth.getSize()
         super.init(frame: .zero)
@@ -86,7 +89,7 @@ private extension GiphyInfoView {
     }
     
     func updateData() {
-        giphyView.configure(URL(string: giphyData.images.fixedWidth.getLink()))
+        giphyView.updateData(using: giphyData.images.fixedWidth.getLink())
         
         trendingDate.isHidden = giphyData.trendingDate.isEmpty
         importDate.isHidden = giphyData.importDate.isEmpty

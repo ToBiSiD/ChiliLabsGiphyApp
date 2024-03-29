@@ -9,8 +9,8 @@ final class UserInfoView: UIView {
     private let profileRedirectButton: UIButton = {
         let button = UIButton(type: .system)
         button.setCornerRadius(20)
-        button.layer.borderWidth = 2
-        button.layer.borderColor = UIColor.systemGray3.cgColor
+        button.setBorder(width: 2, color: AppColor.shadow)
+        button.setShadow(radius: 5, color: AppColor.shadow, opacity: 1)
         
         return button
     }()
@@ -20,6 +20,7 @@ final class UserInfoView: UIView {
         avatar.contentMode = .scaleAspectFill
         avatar.setCornerRadius(20)
         avatar.clipsToBounds = true
+        avatar.setBorder(width: 2, color: AppColor.detailsText)
         
         return avatar
     }()
@@ -29,6 +30,7 @@ final class UserInfoView: UIView {
         name.font = .preferredFont(forTextStyle: .body).boldItalic
         name.textAlignment = .left
         name.numberOfLines = 2
+        name.textColor = AppColor.detailsText
         
         return name
     }()
@@ -88,16 +90,15 @@ private extension UserInfoView {
                 UIApplication.shared.open(url)
             }
         }
-        
     }
     
     func tryLoadImage(for urlString: String) {
         guard let url = URL(string: urlString) else {
-            avatarView.isHidden = true
+            avatarView.backgroundColor = AppColor.giphyBack
             return
         }
         
-        avatarView.isHidden = false
+        avatarView.backgroundColor = .clear
         avatarView.load(url: url)
     }
 }

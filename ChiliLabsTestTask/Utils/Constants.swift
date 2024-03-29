@@ -6,6 +6,9 @@ enum AppColor {
     static let shadow = UIColor.systemGray
     static let error = UIColor.systemRed
     static let navigation = UIColor.systemMint
+    static let detailsText = UIColor.white
+    
+    static let backgroundGradient = [UIColor.black, UIColor.white]
 }
 
 
@@ -15,6 +18,7 @@ struct UIConstants {
     static let cellInRow: Int = 2
     static let collectionSpacing: CGFloat = 10
     static let giphyCellId: String = "giphyCell"
+    static let errorSize: CGSize = CGSize(width: 300, height: 250)
     
     static func calculateCellSize(for rows: Int, with padding: CGFloat) -> CGFloat {
         DebugLogger.printLog("Calculate Size", type: .action)

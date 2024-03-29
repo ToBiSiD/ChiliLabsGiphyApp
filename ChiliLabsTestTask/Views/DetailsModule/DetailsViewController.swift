@@ -4,7 +4,8 @@ import SwiftUI
 #Preview {
     let coordinator = DetailsCoordinator(
         UINavigationController(),
-        giphy: .mockGiphy
+        giphy: .mockGiphy,
+        cacheService: GiphyVideoCacheService()
     )
     
     return DetailsViewController(coordinator: coordinator).preview
@@ -34,6 +35,7 @@ final class DetailsViewController: UIViewController, UIScrollViewDelegate {
         view.font = .preferredFont(forTextStyle: .title3).bold
         view.textAlignment = .left
         view.numberOfLines = 0
+        view.textColor = AppColor.detailsText
         
         return view
     }()
@@ -45,13 +47,13 @@ final class DetailsViewController: UIViewController, UIScrollViewDelegate {
     private let giphyHeight: CGFloat
     private let giphyData: GiphyObject
     
-    private let coordinator: DetailsCoordinator
+    private let coordinator: DetailsCoordinatorProtocol
     
-    init(coordinator: DetailsCoordinator) {
+    init(coordinator: DetailsCoordinatorProtocol) {
         self.coordinator = coordinator
         self.giphyData = coordinator.getData()
         
-        self.giphyInfo = .init(giphy: giphyData)
+        self.giphyInfo = .init(giphy: giphyData, cacheService: coordinator.getCacheService())
         self.userInfo = .init(user: giphyData.user)
         
         self.giphyHeight = CGFloat(
@@ -67,18 +69,25 @@ final class DetailsViewController: UIViewController, UIScrollViewDelegate {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
         setupUI()
+    }
+    
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        
+        updateGradientFrame()
     }
 }
 
 private extension DetailsViewController {
     func setupUI() {
-        scroll.delegate = self
-        navigationController?.setNavigationBarHidden(true, animated: false)
+        addGradientBackground(colors: AppColor.backgroundGradient)
+        view.addSubviews(navigationView, scroll)
         
-        view.addSubviews(scroll)
+        scroll.delegate = self
         scroll.addSubviews(contentHolder)
-        contentHolder.addArrangedSubviews(navigationView, titleText, giphyInfo, userInfo)
+        contentHolder.addArrangedSubviews(titleText, giphyInfo, userInfo)
         
         setupConstraints()
         setDetails()
@@ -86,9 +95,14 @@ private extension DetailsViewController {
     
     func setupConstraints() {
         NSLayoutConstraint.activate([
-            scroll.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
-            scroll.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
-            scroll.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            navigationView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: UIConstants.horizontalPadding),
+            navigationView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -UIConstants.horizontalPadding),
+            navigationView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 20),
+            navigationView.heightAnchor.constraint(equalToConstant: 50),
+            
+            scroll.leadingAnchor.constraint(equalTo: navigationView.leadingAnchor),
+            scroll.trailingAnchor.constraint(equalTo: navigationView.trailingAnchor),
+            scroll.topAnchor.constraint(equalTo: navigationView.bottomAnchor, constant: 5),
             scroll.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
             
             contentHolder.topAnchor.constraint(equalTo: scroll.topAnchor),
@@ -98,20 +112,16 @@ private extension DetailsViewController {
             
             contentHolder.widthAnchor.constraint(equalTo: scroll.frameLayoutGuide.widthAnchor),
             
-            navigationView.leadingAnchor.constraint(equalTo: contentHolder.leadingAnchor, constant: 10),
-            navigationView.trailingAnchor.constraint(equalTo: contentHolder.trailingAnchor, constant: -10),
-            navigationView.heightAnchor.constraint(equalToConstant: 50),
-            
-            titleText.leadingAnchor.constraint(equalTo: contentHolder.leadingAnchor, constant: 20),
-            titleText.trailingAnchor.constraint(equalTo: contentHolder.trailingAnchor, constant: -20),
+            titleText.leadingAnchor.constraint(equalTo: contentHolder.leadingAnchor, constant: UIConstants.horizontalPadding),
+            titleText.trailingAnchor.constraint(equalTo: contentHolder.trailingAnchor, constant: -UIConstants.horizontalPadding),
             titleText.heightAnchor.constraint(greaterThanOrEqualToConstant: 50),
             
-            giphyInfo.leadingAnchor.constraint(equalTo: contentHolder.leadingAnchor, constant: 20),
-            giphyInfo.trailingAnchor.constraint(equalTo: contentHolder.trailingAnchor, constant: -20),
+            giphyInfo.leadingAnchor.constraint(equalTo: titleText.leadingAnchor),
+            giphyInfo.trailingAnchor.constraint(equalTo: titleText.trailingAnchor),
             giphyInfo.heightAnchor.constraint(equalToConstant: giphyHeight),
             
-            userInfo.leadingAnchor.constraint(equalTo: giphyInfo.leadingAnchor, constant: 10),
-            userInfo.trailingAnchor.constraint(equalTo: giphyInfo.trailingAnchor, constant: -10),
+            userInfo.leadingAnchor.constraint(equalTo: titleText.leadingAnchor),
+            userInfo.trailingAnchor.constraint(equalTo: titleText.trailingAnchor),
             userInfo.heightAnchor.constraint(equalToConstant: 70)
         ])
     }

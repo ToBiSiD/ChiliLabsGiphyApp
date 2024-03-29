@@ -37,6 +37,31 @@ extension UIView {
     func setCornerRadius(_ radius: CGFloat) {
         layer.cornerRadius = radius
     }
+    
+    func setBorder(width: CGFloat, color: UIColor, opacity: CGFloat = 1) {
+        layer.borderWidth = width
+        layer.borderColor = color.withAlphaComponent(opacity).cgColor
+    }
+    
+    func addGradientBackground(colors: [UIColor], startPoint: CGPoint = CGPoint(x: 0.5, y: 0.0), endPoint: CGPoint = CGPoint(x: 0.5, y: 1.0), with radius: CGFloat = 0) {
+        let gradientLayer = CAGradientLayer()
+        gradientLayer.frame = bounds
+        gradientLayer.colors = colors.map { $0.cgColor }
+        gradientLayer.startPoint = startPoint
+        gradientLayer.endPoint = endPoint
+        gradientLayer.masksToBounds = true
+        gradientLayer.cornerRadius = radius
+        
+        layer.insertSublayer(gradientLayer, at: 0)
+    }
+    
+    func updateGradientFrame() {
+        guard let gradientLayer = layer.sublayers?.first(where: { $0 is CAGradientLayer }) as? CAGradientLayer else {
+            return
+        }
+    
+        gradientLayer.frame = self.bounds
+    }
 }
 
 //MARK: - Preview Logic

@@ -11,8 +11,8 @@ import SwiftUI
 final class DateLabelView: UIView {
     private let titleText: UILabel = {
         let label = UILabel()
-        label.font = .preferredFont(forTextStyle: .body).bold
-        label.textColor = .label
+        label.font = .preferredFont(forTextStyle: .subheadline).bold
+        label.textColor = AppColor.detailsText
         label.textAlignment = .left
         
         return label
@@ -20,8 +20,8 @@ final class DateLabelView: UIView {
     
     private let dateText: UILabel = {
         let label = UILabel()
-        label.font = .preferredFont(forTextStyle: .caption1).boldItalic
-        label.textColor = .label
+        label.font = .preferredFont(forTextStyle: .caption2).boldItalic
+        label.textColor = AppColor.detailsText
         label.textAlignment = .left
         
         return label
@@ -58,7 +58,7 @@ private extension DateLabelView {
             
             dateText.leadingAnchor.constraint(equalTo: self.leadingAnchor),
             dateText.trailingAnchor.constraint(equalTo: self.trailingAnchor),
-            dateText.topAnchor.constraint(equalTo: titleText.bottomAnchor, constant: 20),
+            dateText.topAnchor.constraint(equalTo: titleText.bottomAnchor, constant: 10),
             dateText.heightAnchor.constraint(lessThanOrEqualToConstant: 70)
         ])
     }

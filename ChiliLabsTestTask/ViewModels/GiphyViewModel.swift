@@ -8,7 +8,7 @@ enum DataState {
 }
 
 final class GiphyViewModel {
-    private let apiService: GiphyLoaderService = .init()
+    private let apiService: APILoaderService
     
     private(set) var gifs: [GiphyObject] = []
     private(set) var offset = 0
@@ -19,7 +19,9 @@ final class GiphyViewModel {
     
     @Published private(set) var dataState: DataState = .idle
     
-    init() {
+    init(apiService: APILoaderService) {
+        self.apiService = apiService
+        
         fetch()
     }
     
@@ -80,14 +82,12 @@ private extension GiphyViewModel {
     }
     
     func handleSuccess(_ result: GiphyResponse) {
-        guard !result.data.isEmpty else {
-            dataState = .error(message: "Cannot find any giphy")
-            return
-        }
+        guard !result.data.isEmpty else { return }
         
         totalCount = result.pagination.totalCount
         gifs = offset == 0 ? result.data : gifs + result.data
         DebugLogger.printLog(gifs.count, place: .viewModel("\(self)"), type: .success)
-        dataState = .loaded
+        
+        dataState = gifs.count == 0 ? .error(message: "Cannot find any giphy") : .loaded
     }
 }

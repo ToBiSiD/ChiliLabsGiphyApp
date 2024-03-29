@@ -36,25 +36,23 @@ final class GiphyContentView: UIView {
         return view
     }()
     
-    private let gifLayer: AVPlayerLayer = {
+    private let giphyLayer: AVPlayerLayer = {
         let layer = AVPlayerLayer()
         layer.videoGravity = .resizeAspectFill
         
         return layer
     }()
     
+    private var cacheService: VideoCacheService?
     private var cancellables = Set<AnyCancellable>()
+    private var isActive: Bool = false
     
-    convenience init(_ frame: CGRect, gifAspect: AVLayerVideoGravity = .resizeAspectFill) {
-        self.init(frame: frame)
-        gifLayer.videoGravity = gifAspect
-    }
-    
-    override init(frame: CGRect) {
+    init(frame: CGRect, cacheService: VideoCacheService? = nil, gifAspect: AVLayerVideoGravity = .resizeAspectFill) {
+        self.cacheService = cacheService
+        giphyLayer.videoGravity = gifAspect
         super.init(frame: frame)
         
         setupUI()
-        configure()
         subscribeOnApplicationState()
     }
     
@@ -65,38 +63,48 @@ final class GiphyContentView: UIView {
     deinit {
         cleanUp()
     }
-    
-    func configure(_ gifLink: URL? = nil) {
-        guard let url = gifLink else {
-            resetViews()
-            return
+}
+
+//MARK: - Public methods
+extension GiphyContentView {
+    func setCachedService(_ cachedService: VideoCacheService?) {
+        if self.cacheService == nil {
+            self.cacheService = cachedService
         }
-        tryPlayGif(url)
     }
     
-    func stopGiphy() {
-        gifLayer.player?.pause()
+    func updateData(using url: String) {
+        loadVideo(from: url)
     }
     
-    func prepareForReuse() {
-        gifLayer.player?.pause()
-        gifLayer.player?.replaceCurrentItem(with: nil)
+    func changeActive(_ isActive: Bool = true) {
+        self.isActive = isActive
+        if self.isActive {
+            resumeGiphy()
+        } else {
+            pauseGiphy()
+        }
+    }
+    
+    func resetData() {
+        cleanUp()
         resetViews()
     }
 }
 
+//MARK: - Setup UI
 private extension GiphyContentView {
     func setupUI() {
         addSubviews(placeholderView, videoContainerView)
         placeholderView.addSubviews(spinnerView, loadErrorText)
         
         setupConstrains()
-        setupGifView()
+        setupGiphyView()
     }
     
-    func setupGifView() {
-        gifLayer.frame = bounds
-        videoContainerView.layer.addSublayer(gifLayer)
+    func setupGiphyView() {
+        giphyLayer.frame = bounds
+        videoContainerView.layer.addSublayer(giphyLayer)
         videoContainerView.layer.masksToBounds = true
     }
     
@@ -126,15 +134,77 @@ private extension GiphyContentView {
         ])
     }
     
-    func tryPlayGif(_ url: URL) {
-        if gifLayer.player == nil {
-            let player = AVPlayer(url: url)
-            gifLayer.player = player
-        } else {
-            gifLayer.player?.replaceCurrentItem(with: AVPlayerItem(url: url))
+    func replayGiphy() {
+        giphyLayer.player?.seek(to: .zero)
+        giphyLayer.player?.play()
+    }
+    
+    func cleanGiphy() {
+        giphyLayer.player?.pause()
+        giphyLayer.player = nil
+    }
+    
+    func playGiphy() {
+        hideError()
+        videoContainerView.isHidden = false
+        replayGiphy()
+    }
+    
+    func hideError(stopSpinner: Bool = true) {
+        if stopSpinner {
+            spinnerView.stopAnimating()
         }
         
-        subscribeOnPlayer(player: gifLayer.player)
+        loadErrorText.isHidden = true
+    }
+    
+    func showError() {
+        videoContainerView.isHidden = true
+        cleanGiphy()
+        spinnerView.stopAnimating()
+        loadErrorText.isHidden = false
+    }
+}
+
+//MARK: - Subscription logic 
+private extension GiphyContentView {
+    func cleanUp() {
+        cleanGiphy()
+        cancellables.forEach { $0.cancel() }
+    }
+    
+    func loadVideo(from url: String) {
+        cacheService?.loadVideo(from: url)
+            .receive(on: DispatchQueue.main)
+            .sink { completion in
+                switch completion {
+                case .finished:
+                    break
+                case .failure(_):
+                    self.showError()
+                }
+            } receiveValue: { result in
+                self.isActive = true
+                self.handleLoadingAVAsset(result)
+            }
+            .store(in: &cancellables)
+    }
+    
+    func handleLoadingAVAsset(_ asset: AVAsset?) {
+        guard let asset = asset else {
+            showError()
+            return
+        }
+        
+        let item = AVPlayerItem(asset: asset)
+        
+        if self.giphyLayer.player == nil {
+            self.giphyLayer.player = AVPlayer(playerItem: item)
+        } else {
+            self.giphyLayer.player?.replaceCurrentItem(with: item)
+        }
+        
+        self.subscribeOnPlayer(player: self.giphyLayer.player)
     }
     
     func subscribeOnPlayer(player: AVPlayer?) {
@@ -148,34 +218,23 @@ private extension GiphyContentView {
         
         NotificationCenter.default.publisher(for: .AVPlayerItemDidPlayToEndTime, object:  player.currentItem)
             .sink { [weak self] _ in
-                self?.playerDidFinishPlaying()
+                self?.replayGiphy()
             }
             .store(in: &cancellables)
-    }
-    
-    func playerDidFinishPlaying() {
-        gifLayer.player?.seek(to: .zero)
-        gifLayer.player?.play()
-    }
-}
-
-private extension GiphyContentView {
-    func cleanUp() {
-        cancellables.forEach { $0.cancel() }
-        gifLayer.player?.pause()
-        gifLayer.player?.replaceCurrentItem(with: nil)
     }
     
     func subscribeOnApplicationState() {
         NotificationCenter.default.publisher(for: UIApplication.didBecomeActiveNotification)
             .sink { [weak self] _ in
-                self?.applicationDidBecomeActive()
+                self?.resumeGiphy()
             }
             .store(in: &cancellables)
         
         NotificationCenter.default.publisher(for: UIApplication.didEnterBackgroundNotification)
             .sink { [weak self] _ in
-                self?.applicationDidEnterBackground()
+                if self?.isActive ?? true {
+                    self?.pauseGiphy()
+                }
             }
             .store(in: &cancellables)
     }
@@ -183,28 +242,25 @@ private extension GiphyContentView {
     func handlePlayerStatusChange(_ status: AVPlayerItem.Status) {
         switch status {
         case .readyToPlay:
-            videoContainerView.isHidden = false
-            spinnerView.stopAnimating()
-            gifLayer.player?.play()
+            playGiphy()
         case .failed:
-            spinnerView.stopAnimating()
-            loadErrorText.isHidden = false
+            showError()
         case .unknown:
-            loadErrorText.isHidden = true
+            hideError(stopSpinner: false)
         @unknown default:
             fatalError("Unhandled AVPlayerItem status")
         }
     }
     
-    func applicationDidBecomeActive() {
-        if let player = gifLayer.player {
+    func resumeGiphy() {
+        if let player = giphyLayer.player, isActive {
             DebugLogger.printLog("Play player", type: .action)
             player.play()
         }
     }
     
-    func applicationDidEnterBackground() {
-        if let player = gifLayer.player {
+    func pauseGiphy() {
+        if let player = giphyLayer.player {
             DebugLogger.printLog("Pause player", type: .action)
             player.pause()
         }

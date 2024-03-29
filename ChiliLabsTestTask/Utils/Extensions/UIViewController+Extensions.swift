@@ -1,6 +1,14 @@
 import SwiftUI
 
 extension UIViewController {
+    func addGradientBackground(colors: [UIColor], startPoint: CGPoint = CGPoint(x: 0.5, y: 0.0), endPoint: CGPoint = CGPoint(x: 0.5, y: 1.0)) {
+        view.addGradientBackground(colors: colors, startPoint: startPoint, endPoint: endPoint)
+    }
+    
+    func updateGradientFrame() {
+        view.updateGradientFrame()
+    }
+    
     func dismissPopup(completion: (() -> Void)? = nil) {
         self.dismiss(animated: true, completion: completion)
     }

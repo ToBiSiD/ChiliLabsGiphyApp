@@ -14,6 +14,13 @@ enum Endpoints: String {
 enum ContentType: String {
     case gif = "gifs"
     case stiker = "stickers"
+    
+    var title: String {
+        switch self {
+        case .gif: "GIFS"
+        case .stiker: "STIKERS"
+        }
+    }
 }
 
 enum GiphyLinkParams: String {

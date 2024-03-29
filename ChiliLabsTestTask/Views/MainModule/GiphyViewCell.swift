@@ -23,7 +23,6 @@ final class GiphyViewCell: UICollectionViewCell {
         super.init(frame: frame)
         
         setupUI()
-        configure()
     }
     
     required init?(coder: NSCoder) {
@@ -33,18 +32,27 @@ final class GiphyViewCell: UICollectionViewCell {
     override func prepareForReuse() {
         super.prepareForReuse()
         
-        giphyView.prepareForReuse()
+        giphyView.resetData()
     }
-    
-    func configure(_ gifLink: URL? = nil) {
-        giphyView.configure(gifLink)
+}
+
+//MARK: - Public methods
+extension GiphyViewCell {
+    func configure(using cachedService: VideoCacheService, with link: String) {
+        giphyView.setCachedService(cachedService)
+        giphyView.updateData(using: link)
     }
     
     func setupShadow(_ path: UIBezierPath?) {
         self.setShadow(radius: 10, color: AppColor.shadow, opacity: 1, using: path?.cgPath)
     }
+    
+    func changeGiphyState(isPlay: Bool = true) {
+        giphyView.changeActive(isPlay)
+    }
 }
 
+//MARK: - Setup UI
 private extension GiphyViewCell {
     func setupUI() {
         addSubviews(giphyView)
