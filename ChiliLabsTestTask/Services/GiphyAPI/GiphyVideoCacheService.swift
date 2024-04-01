@@ -11,7 +11,7 @@ final class GiphyVideoCacheService: VideoCacheService {
     private let cacheQueue = DispatchQueue(label: "cachingQueue")
     
     func loadVideo(from urlString: String) -> AnyPublisher<AVURLAsset?, Error> {
-        guard let url = URL(string: urlString) else {
+        guard let url = URL(string: urlString), UIApplication.shared.canOpenURL(url) else {
             return Fail(error: NetworkError.invalidLink).eraseToAnyPublisher()
         }
         

@@ -45,7 +45,19 @@
 		D26E6FA52BB2CDE5001C797C /* UserInfoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D26E6FA42BB2CDE5001C797C /* UserInfoView.swift */; };
 		D2EACA5E2BB5CF4600B64D73 /* GiphyVideoCacheService.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2EACA5D2BB5CF4600B64D73 /* GiphyVideoCacheService.swift */; };
 		D2EACA602BB6E36B00B64D73 /* PopupErrorViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2EACA5F2BB6E36B00B64D73 /* PopupErrorViewController.swift */; };
+		D2EACA6F2BB71E0B00B64D73 /* GiphyViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2EACA6E2BB71E0B00B64D73 /* GiphyViewModelTests.swift */; };
+		D2EACA712BB726BD00B64D73 /* GiphyVideoCacheServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2EACA702BB726BD00B64D73 /* GiphyVideoCacheServiceTests.swift */; };
 /* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		D2EACA692BB71D9F00B64D73 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D26E6F3C2BAC2434001C797C /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = D26E6F432BAC2434001C797C;
+			remoteInfo = ChiliLabsTestTask;
+		};
+/* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
 		D26E6F442BAC2434001C797C /* ChiliLabsTestTask.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ChiliLabsTestTask.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -88,10 +100,20 @@
 		D26E6FA42BB2CDE5001C797C /* UserInfoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserInfoView.swift; sourceTree = "<group>"; };
 		D2EACA5D2BB5CF4600B64D73 /* GiphyVideoCacheService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GiphyVideoCacheService.swift; sourceTree = "<group>"; };
 		D2EACA5F2BB6E36B00B64D73 /* PopupErrorViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopupErrorViewController.swift; sourceTree = "<group>"; };
+		D2EACA652BB71D9F00B64D73 /* ChiliLabsTestTaskTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ChiliLabsTestTaskTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		D2EACA6E2BB71E0B00B64D73 /* GiphyViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GiphyViewModelTests.swift; sourceTree = "<group>"; };
+		D2EACA702BB726BD00B64D73 /* GiphyVideoCacheServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GiphyVideoCacheServiceTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
 		D26E6F412BAC2434001C797C /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D2EACA622BB71D9F00B64D73 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -105,6 +127,7 @@
 			isa = PBXGroup;
 			children = (
 				D26E6F462BAC2434001C797C /* ChiliLabsTestTask */,
+				D2EACA662BB71D9F00B64D73 /* ChiliLabsTestTaskTests */,
 				D26E6F452BAC2434001C797C /* Products */,
 			);
 			sourceTree = "<group>";
@@ -113,6 +136,7 @@
 			isa = PBXGroup;
 			children = (
 				D26E6F442BAC2434001C797C /* ChiliLabsTestTask.app */,
+				D2EACA652BB71D9F00B64D73 /* ChiliLabsTestTaskTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -275,6 +299,15 @@
 			path = Reusable;
 			sourceTree = "<group>";
 		};
+		D2EACA662BB71D9F00B64D73 /* ChiliLabsTestTaskTests */ = {
+			isa = PBXGroup;
+			children = (
+				D2EACA6E2BB71E0B00B64D73 /* GiphyViewModelTests.swift */,
+				D2EACA702BB726BD00B64D73 /* GiphyVideoCacheServiceTests.swift */,
+			);
+			path = ChiliLabsTestTaskTests;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -295,6 +328,24 @@
 			productReference = D26E6F442BAC2434001C797C /* ChiliLabsTestTask.app */;
 			productType = "com.apple.product-type.application";
 		};
+		D2EACA642BB71D9F00B64D73 /* ChiliLabsTestTaskTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = D2EACA6D2BB71D9F00B64D73 /* Build configuration list for PBXNativeTarget "ChiliLabsTestTaskTests" */;
+			buildPhases = (
+				D2EACA612BB71D9F00B64D73 /* Sources */,
+				D2EACA622BB71D9F00B64D73 /* Frameworks */,
+				D2EACA632BB71D9F00B64D73 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				D2EACA6A2BB71D9F00B64D73 /* PBXTargetDependency */,
+			);
+			name = ChiliLabsTestTaskTests;
+			productName = ChiliLabsTestTaskTests;
+			productReference = D2EACA652BB71D9F00B64D73 /* ChiliLabsTestTaskTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -307,6 +358,10 @@
 				TargetAttributes = {
 					D26E6F432BAC2434001C797C = {
 						CreatedOnToolsVersion = 15.2;
+					};
+					D2EACA642BB71D9F00B64D73 = {
+						CreatedOnToolsVersion = 15.2;
+						TestTargetID = D26E6F432BAC2434001C797C;
 					};
 				};
 			};
@@ -324,6 +379,7 @@
 			projectRoot = "";
 			targets = (
 				D26E6F432BAC2434001C797C /* ChiliLabsTestTask */,
+				D2EACA642BB71D9F00B64D73 /* ChiliLabsTestTaskTests */,
 			);
 		};
 /* End PBXProject section */
@@ -336,6 +392,13 @@
 				D26E6F542BAC2436001C797C /* LaunchScreen.storyboard in Resources */,
 				D26E6F512BAC2436001C797C /* Assets.xcassets in Resources */,
 				D26E6F4F2BAC2435001C797C /* Main.storyboard in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D2EACA632BB71D9F00B64D73 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -384,7 +447,24 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		D2EACA612BB71D9F00B64D73 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D2EACA6F2BB71E0B00B64D73 /* GiphyViewModelTests.swift in Sources */,
+				D2EACA712BB726BD00B64D73 /* GiphyVideoCacheServiceTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		D2EACA6A2BB71D9F00B64D73 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = D26E6F432BAC2434001C797C /* ChiliLabsTestTask */;
+			targetProxy = D2EACA692BB71D9F00B64D73 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
 		D26E6F4D2BAC2435001C797C /* Main.storyboard */ = {
@@ -587,6 +667,40 @@
 			};
 			name = Release;
 		};
+		D2EACA6B2BB71D9F00B64D73 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = TobiasFate.ChiliLabsTestTaskTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/ChiliLabsTestTask.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/ChiliLabsTestTask";
+			};
+			name = Debug;
+		};
+		D2EACA6C2BB71D9F00B64D73 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = TobiasFate.ChiliLabsTestTaskTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/ChiliLabsTestTask.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/ChiliLabsTestTask";
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -604,6 +718,15 @@
 			buildConfigurations = (
 				D26E6F592BAC2436001C797C /* Debug */,
 				D26E6F5A2BAC2436001C797C /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		D2EACA6D2BB71D9F00B64D73 /* Build configuration list for PBXNativeTarget "ChiliLabsTestTaskTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D2EACA6B2BB71D9F00B64D73 /* Debug */,
+				D2EACA6C2BB71D9F00B64D73 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
